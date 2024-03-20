@@ -1,6 +1,6 @@
 import '../pages/index.css';
-import {initialCards} from './cards';
-import { createCard, deleteCard, likeCard, toggleDeleteButton, toggleLikeButton, } from './card';
+//import {initialCards} from './cards';
+import { createCard, deleteCard, likeCard, toggleDeleteButton, toggleLikeButton, renderLikes, handleDeleteCard } from './card';
 import { openPopup, closePopup, escapeHandler, } from './modal';
 import { enableValidation, clearValidation } from './validation';
 import { 
@@ -73,7 +73,7 @@ function renderCard(name, link, likes, ) {
         link,
         likes,
     }
-    const cardItem = createCard(CardData, deleteCard, renderLikes, imgPopeup, userID);
+    const cardItem = createCard(CardData, handleDeleteCard, renderLikes, imgPopeup, userID);
     placesList.append(cardItem)
   }
 
@@ -118,7 +118,7 @@ function newPlaceFormSubmit(evt){
     }
     createNewCard(data)
     .then((data) =>{
-        const cardItem = createCard(data, deleteCard, likeCard, imgPopeup, userID);
+        const cardItem = createCard(data, handleDeleteCard, renderLikes, imgPopeup, userID);
         placesList.prepend(cardItem);
         newPlaceForm.reset();
         closePopup(addPopup)
@@ -131,14 +131,14 @@ function newPlaceFormSubmit(evt){
 //Функция для изменения аватара
 function updateAvatarSubmit(evt) {
     evt.preventDefault();
-    editForm.querySelector('.popup__button').textContent = "Сохранение..."; 
+    editImageForm.querySelector('.popup__button').textContent = "Сохранение..."; 
     updateAvatar(imageInput)
     .then((res) => {
         profilePic.setAttribute('style', `background-image:url(${res.avatar})`)
         closePopup(editImagePopup) 
     })
     .finally(()=> {
-        editForm.querySelector('.popup__button').textContent = "Сохранить"})
+        editImageForm.querySelector('.popup__button').textContent = "Сохранить"})
 }
 
 //открытие попапа данных профиля
@@ -189,35 +189,9 @@ Promise.all([getPersonalData(), getCards()])
     setProfileData(userID);
     cards.forEach((card) => {renderCard(card.name, card.link, card.likes)});
  })
-  .catch((err) => {
+.catch((err) => {
  console.log("Произошла ошибка при получении данных:", err);
  });
-
-
-
-// Функция подсчета лайков
-function renderLikes(likesCount, likeButton, CardData) {
-    if (likeButton.classList.contains('card__like-button_is-active')) {
-      deleteLikeCard(CardData._id)
-      .then((res) => {
-        likeButton.classList.toggle('card__like-button_is-active');
-        likesCount.textContent = res.likes.length;
-      })
-      .catch((err) => {
-        console.error("Произошла ошибка при удалении лайка:", err);
-      });
-    } else {
-      addLikeCard(CardData._id)
-      .then((res) => {
-        likeButton.classList.toggle('card__like-button_is-active');
-        likesCount.textContent = res.likes.length;
-      })
-      .catch((err) => {
-        console.error("Произошла ошибка при добавлении лайка:", err);
-      });
-    }
-  }
-  
 
 
 

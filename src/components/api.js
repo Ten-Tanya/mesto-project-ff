@@ -89,3 +89,12 @@ export function createNewCard(newCard){
       })
       .then(handleResponse)
   }
+
+  //запрос на удаление карточки
+  export function deleteCardApi(id){
+    return fetch(`${config.baseUrl}/cards/${id}`, {
+        method:'DELETE',
+        headers: config.headers
+      })
+      .then(handleResponse)
+  }
