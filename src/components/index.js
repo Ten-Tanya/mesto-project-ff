@@ -1,6 +1,6 @@
 import '../pages/index.css';
 //import {initialCards} from './cards';
-import { createCard, deleteCard, likeCard, toggleDeleteButton, toggleLikeButton, renderLikes, handleDeleteCard } from './card';
+import { createCard, deleteCardEvt, likeCard, toggleDeleteButton, toggleLikeButton, renderLikes, handleDeleteCard } from './card';
 import { openPopup, closePopup, escapeHandler, } from './modal';
 import { enableValidation, clearValidation } from './validation';
 import { 
@@ -67,13 +67,9 @@ function setProfileData(user) {
       
 
 // функция отображения карточек    
-function renderCard(name, link, likes, ) {
-    const CardData = {
-        name,
-        link,
-        likes,
-    }
-    const cardItem = createCard(CardData, handleDeleteCard, renderLikes, imgPopeup, userID);
+function renderCard(CardData, userID ) {
+  
+    const cardItem = createCard(CardData, deleteCardEvt, renderLikes, imgPopeup, userID);
     placesList.append(cardItem)
   }
 
@@ -187,7 +183,7 @@ enableValidation(validationConfig);
 Promise.all([getPersonalData(), getCards()])
 .then(([userID, cards]) => {
     setProfileData(userID);
-    cards.forEach((card) => {renderCard(card.name, card.link, card.likes)});
+    cards.forEach((card) => {renderCard(card, userID)});
  })
 .catch((err) => {
  console.log("Произошла ошибка при получении данных:", err);

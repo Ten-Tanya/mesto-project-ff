@@ -2,24 +2,26 @@
 import { userID } from ".";
 import { addLikeCard, deleteLikeCard, deleteCardApi } from "./api";
 
-export function createCard(CardData, handleDeleteCard, renderLikes, imgPopeup, userID) {
+export function createCard(CardData, deleteCardEvt, renderLikes, imgPopeup, userID) {
   const cardTemplate = document.querySelector('#card-template').content;
   const cardElement = cardTemplate.querySelector('.places__item').cloneNode(true);
+
   const likeButton = cardElement.querySelector('.card__like-button');
   const deleteButton = cardElement.querySelector('.card__delete-button');
   const likesCount = cardElement.querySelector('.card__like_nb');
+  
   cardElement.querySelector('.card__image').src = CardData.link;
   cardElement.querySelector('.card__image').alt = CardData.name;
   cardElement.querySelector('.card__title').textContent = CardData.name;
   likesCount.textContent = CardData.likes.length;
   //проверяем владельца карточки и убираем кнопку удаления, если карточка чужая
-  if (userID !== CardData.owner['_id']) 
+  if (userID !== CardData.owner._id) 
   { deleteButton.classList.add("card__delete-button_disabled")
     }
   else {
     deleteButton.classList.remove("card__delete-button_disabled")
   };
-  deleteButton.addEventListener('click', handleDeleteCard);
+  deleteButton.addEventListener('click', deleteCardEvt);
   
 // Проверка наличия лайка пользователя в массиве likes
 const isLiked = CardData.likes.some((like) => like._id === userID);
@@ -38,10 +40,10 @@ else {
 };
 
 //удалить карточку
-//export function deleteCard(event) {
-//  const cardItem = event.target.closest('.places__item');
-//  cardItem.remove();
-//}
+export function deleteCardEvt(event) {
+  const cardItem = event.target.closest('.places__item');
+  cardItem.remove();
+}
 
 export function deleteCard(cardElement, cardID){
   deleteCardApi(cardID)
