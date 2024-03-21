@@ -9,18 +9,17 @@ export function createCard(CardData, deleteCardEvt, renderLikes, imgPopeup, user
   const likeButton = cardElement.querySelector('.card__like-button');
   const deleteButton = cardElement.querySelector('.card__delete-button');
   const likesCount = cardElement.querySelector('.card__like_nb');
-  
+
   cardElement.querySelector('.card__image').src = CardData.link;
   cardElement.querySelector('.card__image').alt = CardData.name;
   cardElement.querySelector('.card__title').textContent = CardData.name;
   likesCount.textContent = CardData.likes.length;
   //проверяем владельца карточки и убираем кнопку удаления, если карточка чужая
   if (userID !== CardData.owner._id) 
-  { deleteButton.classList.add("card__delete-button_disabled")
-    }
-  else {
-    deleteButton.classList.remove("card__delete-button_disabled")
-  };
+  { deleteButton.style.display = "none";
+  } else {
+    deleteButton.style.display = "block";
+  }
   deleteButton.addEventListener('click', deleteCardEvt);
   
 // Проверка наличия лайка пользователя в массиве likes
@@ -28,11 +27,8 @@ const isLiked = CardData.likes.some((like) => like._id === userID);
 if (isLiked) {
   likeButton.classList.add("card__like-button_is-active");
 }
-else {
-  likeButton.classList.remove("card__like-button_is-active");
-}
 //слушатель лайка для карточки
-  likeButton.addEventListener('click', renderLikes);
+  likeButton.addEventListener('click', () => renderLikes(likesCount, likeButton, CardData));
 
 //слушатель открытия попапа с картинкой
   cardElement.querySelector('.card__image').addEventListener('click', () => imgPopeup(CardData.name,CardData.link));
@@ -80,6 +76,7 @@ export function handleDeleteCard(evt) {
 
 // Функция подсчета лайков
 export function renderLikes(likesCount, likeButton, CardData) {
+
   if (likeButton.classList.contains('card__like-button_is-active')) {
     deleteLikeCard(CardData._id)
     .then((res) => {
