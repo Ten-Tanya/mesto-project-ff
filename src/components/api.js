@@ -70,8 +70,6 @@ export function createNewCard(newCard){
 }
 
 
-
-
   //функция добавления лайка
   export function addLikeCard(id){
    return fetch(`${config.baseUrl}/cards/likes/${id}`, {

@@ -1,6 +1,6 @@
 import '../pages/index.css';
 //import {initialCards} from './cards';
-import { createCard, deleteCardEvt, likeCard, toggleDeleteButton, toggleLikeButton, renderLikes, handleDeleteCard } from './card';
+import { createCard, renderLikes, deleteCard } from './card';
 import { openPopup, closePopup, escapeHandler, } from './modal';
 import { enableValidation, clearValidation } from './validation';
 import { 
@@ -15,36 +15,39 @@ import {
     deleteLikeCard  
      } from './api';
 
+//Профиль     
 const placesList = document.querySelector('.places__list');
 const profileName = document.querySelector('.profile__title');
 const profileDescription = document.querySelector('.profile__description');
 const profilePic = document.querySelector('.profile__image');
+const profilePicButton = document.querySelector('.profile__image-button');
+
+//Попап изменения аватара
+const editImagePopup = document.querySelector('.popup_type_edit_image');
+const editImageForm = document.querySelector('.popup__form[name="new-avatar"]');
+const imageInput = editImageForm.querySelector('.popup__input_type_url');
 
 //modal
 const closeButtons = document.querySelectorAll('.popup__close');
 const popups = document.querySelectorAll('.popup');
 
-//форма редактирования профиля
+//Попап редактирования профиля
 const editButton = document.querySelector('.profile__edit-button');
 const editPopup = document.querySelector('.popup_type_edit');
 const editForm = document.querySelector('.popup__form[name="edit-profile"]');
 const nameInput = editForm.querySelector('.popup__input_type_name');
 const jobInput = editForm.querySelector('.popup__input_type_description');
 
-// форма добавления карточки
+// Попап добавления карточки
 const addButton = document.querySelector('.profile__add-button');
 const addPopup = document.querySelector('.popup_type_new-card');
 const newPlaceForm = document.querySelector('.popup__form[name="new-place"]');
 const placeInput = document.querySelector('.popup__input_type_card-name');
 const linkInput = newPlaceForm.querySelector('.popup__input_type_url');
 
-
+//Попап с картинкой
 const imagePopeup = document.querySelector('.popup_type_image');
 
-//форма изменения аватара
-const editImagePopup = document.querySelector('.popup_type_edit_image');
-const editImageForm = document.querySelector('.popup__form[name="new-avatar"]');
-const imageInput = editImageForm.querySelector('.popup__input_type_url');
 
 const validationConfig = {
         formSelector: '.popup__form',
@@ -68,8 +71,7 @@ function setProfileData(user) {
 
 // функция отображения карточек    
 function renderCard(CardData, userID ) {
-  
-    const cardItem = createCard(CardData, deleteCardEvt, renderLikes, imgPopeup, userID);
+    const cardItem = createCard(CardData, deleteCard, renderLikes, imgPopeup, userID);
     placesList.append(cardItem)
   }
 
@@ -114,11 +116,14 @@ function newPlaceFormSubmit(evt){
     }
     createNewCard(data)
     .then((data) =>{
-        const cardItem = createCard(data, handleDeleteCard, renderLikes, imgPopeup, userID);
+        const cardItem = createCard(data, deleteCard, renderLikes, imgPopeup, userID);
         placesList.prepend(cardItem);
         newPlaceForm.reset();
         closePopup(addPopup)
     })
+    .catch((err) => {
+        console.log(err);
+        })
     .finally(()=> {
         editForm.querySelector('.popup__button').textContent = "Сохранить"})
     
@@ -133,6 +138,9 @@ function updateAvatarSubmit(evt) {
         profilePic.setAttribute('style', `background-image:url(${res.avatar})`)
         closePopup(editImagePopup) 
     })
+    .catch((err) => {
+        console.log(err);
+        })
     .finally(()=> {
         editImageForm.querySelector('.popup__button').textContent = "Сохранить"})
 }
@@ -166,7 +174,7 @@ addButton.addEventListener('click', function(){
 })
 
 //открытие попапа изменения аватара
-profilePic.addEventListener('click', function(){
+profilePicButton.addEventListener('click', function(){
     clearValidation(editImageForm, validationConfig)
     openPopup(editImagePopup)
 })
@@ -183,7 +191,7 @@ enableValidation(validationConfig);
 Promise.all([getPersonalData(), getCards()])
 .then(([userID, cards]) => {
     setProfileData(userID);
-    cards.forEach((card) => {renderCard(card, userID)});
+    cards.forEach((card) => {renderCard(card, userID._id)});
  })
 .catch((err) => {
  console.log("Произошла ошибка при получении данных:", err);
