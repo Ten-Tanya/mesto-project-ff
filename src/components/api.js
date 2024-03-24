@@ -1,6 +1,6 @@
 
 
-export const config = {
+ const config = {
     baseUrl: 'https://nomoreparties.co/v1/wff-cohort-9',
     headers: {
       authorization: '6eba5ef3-f804-4267-951f-0432d19f4467',
@@ -8,7 +8,7 @@ export const config = {
     }
   }
 
-export function handleResponse(res) {
+ function handleResponse(res) {
     if (res.ok) {
         return res.json()
         }

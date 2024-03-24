@@ -1,7 +1,7 @@
 import '../pages/index.css';
 //import {initialCards} from './cards';
 import { createCard, renderLikes, deleteCard } from './card';
-import { openPopup, closePopup, escapeHandler, } from './modal';
+import { openPopup, closePopup, escapeHandler, overlayClosePopup } from './modal';
 import { enableValidation, clearValidation } from './validation';
 import { 
     config, 
@@ -97,12 +97,14 @@ function editFormSubmit(evt) {
     editForm.querySelector('.popup__button').textContent = "Сохранение..."; 
     updateProfileData(nameInput, jobInput)
     .then((user)=>{
-        setIEditFormValues(user)
+        setProfileData(user)
         closePopup (editPopup)
     })
+    .catch((err) => {
+        console.log(err);
+      })
     .finally(()=> {
     editForm.querySelector('.popup__button').textContent = "Сохранить"})
-    
 }
 
 
@@ -119,13 +121,14 @@ function newPlaceFormSubmit(evt){
         const cardItem = createCard(data, deleteCard, renderLikes, imgPopeup, userID);
         placesList.prepend(cardItem);
         newPlaceForm.reset();
+        clearValidation(newPlaceForm, validationConfig);
         closePopup(addPopup)
     })
     .catch((err) => {
         console.log(err);
         })
     .finally(()=> {
-        editForm.querySelector('.popup__button').textContent = "Сохранить"})
+        newPlaceForm.querySelector('.popup__button').textContent = "Сохранить"})
     
 }
 
@@ -155,27 +158,20 @@ editButton.addEventListener('click', function(){
 
 //закрытие попапов
 closeButtons.forEach(button => button.addEventListener('click', function(evt){
-        const popup = evt.target.closest('.popup_is-opened');
+        const popup = evt.target.closest('.popup');
         closePopup(popup)
     })
 )
 //закрытие попапов
-popups.forEach(popup => popup.addEventListener('click', function(evt){
-    const openedModal = evt.target.closest('.popup_is-opened')
-    if (evt.target === openedModal){
-        closePopup(openedModal)
-    }
-}))
+popups.forEach(popup => popup.addEventListener('click', overlayClosePopup))
 
 //открытие попапа добавления новой карточки
 addButton.addEventListener('click', function(){
-    clearValidation(newPlaceForm, validationConfig)
     openPopup(addPopup)
 })
 
 //открытие попапа изменения аватара
 profilePicButton.addEventListener('click', function(){
-    clearValidation(editImageForm, validationConfig)
     openPopup(editImagePopup)
 })
 

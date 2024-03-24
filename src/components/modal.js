@@ -16,6 +16,13 @@ export function escapeHandler(evt) {
    }
 };
 
+export function overlayClosePopup(evt) {
+    const openedModal = evt.target.closest('.popup_is-opened')
+    if (evt.target === openedModal){
+        closePopup(openedModal)
+    }
+}
+
 
 
 
